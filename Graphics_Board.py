@@ -1,5 +1,7 @@
 from graphics import *
 from Direction import *
+import time
+import numpy as np
 line=1.9052
 radius = 25
 class Graphics_Board:
@@ -21,19 +23,25 @@ class Graphics_Board:
         c.setFill(color)
         c.draw(self.window)
         return c
-    def move_ball(self, ball, dir):
+    def move_balls_internal(self, balls, delta_x, delta_y):
+        for i in range(22):
+            for ball in balls:
+                ball.move(delta_x, delta_y)
+            time.sleep(0.05)
+
+    def move_balls(self, balls, dir):
         if dir==Direction.RIGHT:
-            ball.move(radius*2.2, 0)
+            self.move_balls_internal(balls, radius*0.1, 0)
         elif dir==Direction.LEFT:
-            ball.move(-radius*2.2, 0)
+            self.move_balls_internal(balls, -radius*0.1, 0)
         elif dir == Direction.UP_LEFT:
-            ball.move(-radius*1.1, -radius*line)
+            self.move_balls_internal(balls, -radius * 0.05, -radius*line/22)
         elif dir == Direction.UP_RIGHT:
-            ball.move(radius*1.1, -radius * line)
+            self.move_balls_internal(balls, radius * 0.05, -radius * line/22)
         elif dir == Direction.DOWN_RIGHT:
-            ball.move(radius*1.1, radius * line)
+            self.move_balls_internal(balls, radius*0.05, radius * line/22)
         elif dir == Direction.DOWN_LEFT:
-            ball.move(-radius*1.1, radius * line)
+            self.move_balls_internal(balls, -radius*0.05, radius * line/22)
 
 
 
