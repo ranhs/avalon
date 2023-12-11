@@ -2,12 +2,14 @@ from graphics import *
 from Direction import *
 import time
 import tkinter
+from board import *
 from threading import Event
 import numpy as np
 line=1.9052
 radius = 25
-class Graphics_Board:
+class Graphics_Board(Board):
     def __init__(self):
+        Board.__init__(self)
         self.x_drag_start = 0
         self.y_drag_start = 0
         self.x_drag_end = 0
@@ -17,6 +19,7 @@ class Graphics_Board:
         self.window.bind('<Button-1>', self.mousedown)
         self.window.bind('<ButtonRelease-1>', self.mouseup)
         self.draw_board()
+
 
     def mousedown(self,event):
         self.x_drag_start,self.y_drag_start = event.x, event.y
@@ -99,7 +102,14 @@ class Graphics_Board:
             self.move_balls_internal(balls, radius*0.05, radius * line/22)
         elif dir == Direction.DOWN_LEFT:
             self.move_balls_internal(balls, -radius*0.05, radius * line/22)
-
+    def set_to_start(self):
+        super().set_to_start()
+        for i in range(11):
+            for j in range(11):
+                if self.cells[i, j] == State.WHITE:
+                    self.draw_ball(i,j, "white")
+                if self.cells[i, j] == State.BLACK:
+                    self.draw_ball(i,j, "black")
 
 
 
