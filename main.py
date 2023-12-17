@@ -2,24 +2,24 @@ from Graphics_Board import Graphics_Board
 from Direction import *
 import time
 from board import *
-visual_board = Graphics_Board()
-board1 = Board()
-board1.set_to_start()
-board1.pr()
+board1 = visual_board = Graphics_Board()
+print("X1")
 visual_board.set_to_start()
-
+visual_board.pr()
+print()
+visual_board.prv()
 #
 #
 # #for i in range (4):
 #     #for j in range (5+i):
 #         #visual_board.draw_ball(5-i+j, i+1, "black")
 #         #visual_board.draw_ball(j+1, 9-i, "white")
-# ball=visual_board.draw_ball(5, 5, "white")
-# ball2=visual_board.draw_ball(4,5,"white")
-# ball3=visual_board.draw_ball(3,5,"white")
-# ball4=visual_board.draw_ball(2,5, "black")
-# ball5=visual_board.draw_ball(1,5, "black")
-#
+#ball=visual_board.draw_ball(7, 5, "white")
+#ball2=visual_board.draw_ball(6,5,"white")
+#ball3=visual_board.draw_ball(5,5,"white")
+#ball4=visual_board.draw_ball(4,5, "black")
+#ball5=visual_board.draw_ball(3,5, "white")
+#board1.add_balls()
 # mat = [ball,ball2,ball3]
 # time.sleep(1)
 #
@@ -38,7 +38,25 @@ visual_board.set_to_start()
 # visual_board.move_balls([ball,ball2,ball3,ball4,ball5], Direction.LEFT)
 # visual_board.fall_ball(ball5)
 # x1, y1, x2, y2= visual_board.wait_for_user_move()
-# print(x1, y1, x2, y2)
-x1, y1, x2, y2= visual_board.wait_for_user_move()
-# # print(x1, y1, x2, y2)
-
+#print(x1, y1, x2, y2)
+while True:
+    x1, y1, x2, y2= visual_board.wait_for_user_move()
+    print(x1, y1, x2, y2)
+    d = board1.which_direction(x1, y1, x2, y2)
+    print(d)
+    if d == None:
+        continue
+    print(board1.next_in_direction(x1,y1, d))
+    own, other, n, row= board1.how_much_in_a_row(x1, y1, d)
+    print(own, other, n, row)
+    ok = board1.is_OK(x1,y1,d)
+    print(ok)
+    # if ok:
+    #     balls = []
+    #     for ball in row:
+    #         b = visual_board.balls[ball]
+    #         balls += [b]
+    #     print(balls, d)
+    #     visual_board.move_balls(balls,d)
+    visual_board.make_a_turn(x1, y1, d)
+    board1.pr()
