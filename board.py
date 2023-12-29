@@ -1,3 +1,4 @@
+from Move import Move
 from State import *
 import numpy as np
 from Direction import *
@@ -6,6 +7,8 @@ class Board():
         self.turn = State.BLACK
         self.cells = [int for i in range(11*11)]
         self.cells = np.array(self.cells).reshape((11, 11))
+        self.count_white=0
+        self.count_black=0
         for i in range(11):
             for j in range(11):
                 if i == 0 or i == 10 or j == 0 or j == 10 or i+j < 6 or i+j > 14:
@@ -94,8 +97,16 @@ class Board():
             count_other+=1
             row += [(x,y)]
             x,y=self.next_in_direction(x,y,d)
-        next=self.cells[x,y]
+        next = self.cells[x,y]
         return count_own,count_other, next, row
+
+    def count_up(self, x, y):
+        if self.cells[x, y] == State.BLACK:
+            self.count_white += 1
+            return self.count_white
+        else:
+            self.count_black += 1
+            return self.count_black
     def is_OK(self,x, y, d):
 
         if self.turn != self.cells[x,y]:
@@ -109,15 +120,62 @@ class Board():
             if next == State.EMPTY or next == State.BLOCK:
                 return True
         return False
+    def make_a_move(self, i, j, d):
+        i1, j1 = self.next_in_direction(i,j,d)
+        if self.cells[i1,j1] == State.EMPTY:
+            self.cells[i1,j1] = self.cells[i,j]
+            self.cells[i,j] = State.EMPTY
+            return False
+        if self.cells[i1,j1] == State.BLOCK:
+            self.cells[i,j] = State.EMPTY
+            return True
+        b = self.make_a_move(i1,j1,d)
+        self.cells[i1, j1] = self.cells[i, j]
+        self.cells[i, j] = State.EMPTY
+        return b
 
-    def add_balls(self):
-        self.cells[7,5]=State.WHITE
-        self.cells[6,5]=State.WHITE
-        self.cells[5,5]=State.WHITE
-        self.cells[4,5]=State.BLACK
-        self.cells[3,5]=State.WHITE
+    def all_ligel_moves(self):
+        moves = []
+        for j in range(11):
+            for i in range(11):
+                if self.cells[i,j]==self.turn:
+                    if self.is_OK(i, j, Direction.RIGHT):
+                        moves.append(((i, j), Direction.RIGHT))
+                    if self.is_OK(i, j, Direction.LEFT):
+                        moves.append(((i,j),Direction.LEFT))
+                    if self.is_OK(i, j, Direction.UP_LEFT):
+                        moves.append(((i,j),Direction.UP_LEFT))
+                    if self.is_OK(i, j, Direction.UP_RIGHT):
+                        moves.append(((i, j), Direction.UP_RIGHT))
+                    if self.is_OK(i, j, Direction.DOWN_LEFT):
+                        moves.append(((i, j), Direction.DOWN_LEFT))
+                    if self.is_OK(i, j, Direction.DOWN_RIGHT):
+                        moves.append(((i, j), Direction.DOWN_RIGHT))
 
 
+        return moves
 
 
+    def board_to_string(self):
+        bstr = ""
+        wstr = ""
+        bcount = 0
+        wcount = 0
+        for j in range(11):
+            for i in range(11):
+                if self.cells[i,j] == State.BLOCK:
+                    continue
+                if self.cells[i,j] == State.BLACK:
+                    bstr += chr(bcount+48)
+                    bcount = 0
+                if self.cells[i,j] == State.WHITE:
+                    wstr += chr(wcount+48)
+                    wcount = 0
+                bcount += 1
+                wcount += 1
+        turn = "@"
+        if self.turn == State.BLACK:
+            turn = "#"
+        code = bstr+turn+wstr
+        return code
 

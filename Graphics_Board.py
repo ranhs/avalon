@@ -15,8 +15,6 @@ class Graphics_Board(Board):
         self.y_drag_start = 0
         self.x_drag_end = 0
         self.y_drag_end = 0
-        self.count_black=0
-        self.count_white=0
         self.drag_end = tkinter.IntVar()
         self.window = GraphWin("Avalon", 600, 600)
         self.window.bind('<Button-1>', self.mousedown)
@@ -115,17 +113,50 @@ class Graphics_Board(Board):
                     self.draw_ball(i,j, "white")
                 if self.cells[i, j] == State.BLACK:
                     self.draw_ball(i,j, "black")
+        self.graphic_count()
 
-    def count_up(self,x,y):
-        if self.cells[x,y] == State.BLACK:
-            self.count_white+=1
-        else:
-            self.count_black+=1
+    def graphic_count(self):
+        message = Text(Point(530, 450), "black")
+        message.setSize(18)
+        message.setStyle("bold")
+        message.draw(self.window)
+        message1 = Text(Point(70, 450), "white")
+        message1.setSize(18)
+        message1.setStyle("bold")
+        message1.draw(self.window)
+
+
+    def draw_count(self,n, color):
+        if color==State.BLACK and n<5:
+            aLine = Line(Point(500+10* n, 470), Point(500+10* n, 500))
+            aLine.setWidth(3)
+            aLine.draw(self.window)
+        if color == State.WHITE and n<5:
+            aLine = Line(Point(40 + (10 * n), 470), Point(40 + (10 * n), 500))
+            aLine.setWidth(3)
+            aLine.draw( self.window)
+
     def win(self):
         if self.count_black == 5:
-            message = Text(Point(3, 4), "Black won")
+            message = Text(Point(300, 200), "BLACK WON!")
+            message.setSize(35)
+            message.setTextColor("red")
+            message.setStyle("bold")
+            message.setFace("helvetica")
+            aLine = Line(Point(500+10* self.count_black, 470), Point(500+10* self.count_black, 500))
+            aLine.draw(self.window)
+            message.draw(self.window)
+            return True
         if self.count_white == 5:
-            message = Text(Point(3, 4), "White won")
+            message = Text(Point(3, 4), "WHITE WON!")
+            message.setSize(35)
+            message.setTextColor("red")
+            message.setStyle("bold")
+            message.setFace("helvetica")
+            aLine = Line(Point( 50, 470), Point(40 + 10 * self.count_white, 500))
+            aLine.draw(self.window)
+            message.draw(self.window)
+            return True
 
 
     def make_a_turn(self, x1 ,y1 ,d):
@@ -135,10 +166,7 @@ class Graphics_Board(Board):
             for ball in row:
                 b = self.balls[ball]
                 balls += [b]
-
-            print(row)
             row.reverse()
-            print(row)
             self.move_balls(balls, d)
             for ball in row:
                 x= ball[0]
@@ -146,6 +174,8 @@ class Graphics_Board(Board):
                 n1,n2 =self.next_in_direction(x,y,d)
                 if self.cells[n1,n2] == State.BLOCK:
                     self.fall_ball(self.balls[x,y])
+                    x = self.count_up(x,y)
+                    self.draw_count(x, self.cells[x,y])
 
                 else:
                     self.cells[n1,n2] = self.cells[x,y]
@@ -153,6 +183,8 @@ class Graphics_Board(Board):
             self.cells[x1, y1] = State.EMPTY
             self.balls [x1, y1] = None
             self.change_turn()
+            self.win()
+
 
 
 def wait_for_mouse_click(self):
