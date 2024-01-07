@@ -32,6 +32,7 @@ class Board():
                 if j == 8 or j == 9 or j == 7 and i >= 3 and i <= 5:
                     if self.cells[i,j] == State.EMPTY:
                         self.cells[i][j] = State.BLACK
+
     def is_a_ball(self, x, y):
         if self.cells[x,y] == State.WHITE or self.cells[x,y] == State.BLACK:
             return True
@@ -66,34 +67,20 @@ class Board():
             return Direction.DOWN_LEFT
         return None
     def next_in_direction(self,col , row, d):
-        if d == Direction.RIGHT:
-            return col + 1, row
-        if d == Direction.LEFT:
-            return col - 1, row
-        if d == Direction.UP_RIGHT:
-            return col + 1, row - 1
-        if d == Direction.DOWN_RIGHT:
-            return col, row + 1
-        if d==Direction.UP_LEFT:
-            return col,row - 1
-        if d == Direction.DOWN_LEFT:
-            return col - 1,row + 1
+        return col + Direction.NEXT_IN_DIRECTION[d][0] , row + Direction.NEXT_IN_DIRECTION[d][1]
     def change_turn(self):
-        if self.turn == State.BLACK:
-            self.turn = State.WHITE
-        else:
-            self.turn = State.BLACK
+        self.turn=State.OTHER[self.turn]
 
     def how_much_in_a_row(self,x,y,d):
         count_own=0
         count_other =0
         row = []
         color = self.cells[x,y]
-        while self.cells[x,y]!= State.EMPTY and self.cells[x,y]!= State.BLOCK and self.cells[x,y] == color:
+        while self.cells[x,y] == color:
             count_own+=1
             row += [(x,y)]
             x,y=self.next_in_direction(x,y,d)
-        while self.cells[x,y]!= State.EMPTY and self.cells[x,y]!= State.BLOCK and self.cells[x,y] != color:
+        while self.cells[x,y] == State.OTHER[color]:
             count_other+=1
             row += [(x,y)]
             x,y=self.next_in_direction(x,y,d)
@@ -112,27 +99,21 @@ class Board():
         if self.turn != self.cells[x,y]:
             return False
         count_own, count_other, next, row = self.how_much_in_a_row(x,y,d)
-        if count_own == 1 and count_other == 0 and next == State.EMPTY:
-                return True
-        if count_own > 0 and count_other == 0 and next == State.BLOCK:
-            return False
         if count_own > count_other and count_own <=3:
-            if next == State.EMPTY or next == State.BLOCK:
+            if next == State.EMPTY or next == State.BLOCK and count_other>0:
                 return True
         return False
     def make_a_move(self, i, j, d):
-        i1, j1 = self.next_in_direction(i,j,d)
-        if self.cells[i1,j1] == State.EMPTY:
-            self.cells[i1,j1] = self.cells[i,j]
-            self.cells[i,j] = State.EMPTY
-            return False
-        if self.cells[i1,j1] == State.BLOCK:
-            self.cells[i,j] = State.EMPTY
-            return True
-        b = self.make_a_move(i1,j1,d)
-        self.cells[i1, j1] = self.cells[i, j]
-        self.cells[i, j] = State.EMPTY
-        return b
+        temp1 = State.EMPTY
+        while State.EXIST[self.cells[i,j]]:
+            temp2 = self.cells[i,j]
+            self.cells[i,j] = temp1
+            i, j = self.next_in_direction(i, j, d)
+            temp1 = temp2
+        b = self.cells[i,j] == State.BLOCK
+        if not b:
+            self.cells[i,j] = temp1
+        return b, i, j
 
     def all_ligel_moves(self):
         moves = []

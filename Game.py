@@ -1,11 +1,29 @@
 from board import Board
 from State import *
+from Direction import  *
 import random
 
 class Game():
-    def __int__(self):
+    def __init__(self):
         self.board = Board()
         self.board_scores = {}
+        self.count = 0
+
+    def scan_all_options(self, board, deep):
+        self.count += 1
+        if self.count % 100000 == 0:
+           print(self.count)
+        if deep <= 0:
+            return
+        moves = board.all_ligel_moves()
+        for move in moves:
+            fall, i, j =board.make_a_move(move[0][0],move[0][1],move[1])
+            board.change_turn()
+            self.scan_all_options(board,deep-1)
+            board.make_a_move(i,j, Direction.OPPOSITE[move[1]])
+            board.change_turn()
+
+
 
     def random_game(self):
         self.board = Board()

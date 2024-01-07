@@ -3,14 +3,22 @@ from Game import *
 from Direction import *
 import time
 from board import *
-#board1 = visual_board = Graphics_Board()
-#print("X1")
-#visual_board.set_to_start()
-#visual_board.pr()
-#print()
-#visual_board.prv()
+# board1 = visual_board = Graphics_Board()
+# print("X1")
+# visual_board.set_to_start()
+# visual_board.pr()
+# print()
+# visual_board.prv()
 game =Game()
-game.random_game()
+print('game', game)
+#game.random_game()
+board = Board()
+board.set_to_start()
+
+print('before')
+game.scan_all_options(board,4)
+print(game.count)
+print('after')
 
 #
 #
