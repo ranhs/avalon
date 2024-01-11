@@ -72,6 +72,8 @@ class Board():
         self.turn=State.OTHER[self.turn]
 
     def how_much_in_a_row(self,x,y,d):
+        x0 = x
+        y0 = y
         count_own=0
         count_other =0
         row = []
@@ -138,25 +140,28 @@ class Board():
 
 
     def board_to_string(self):
-        bstr = ""
-        wstr = ""
-        bcount = 0
-        wcount = 0
+        str = ""
         for j in range(11):
             for i in range(11):
                 if self.cells[i,j] == State.BLOCK:
                     continue
                 if self.cells[i,j] == State.BLACK:
-                    bstr += chr(bcount+48)
-                    bcount = 0
+                    str += chr(i+48)+chr(j+48)+chr(i+j-5+48)+'B'
                 if self.cells[i,j] == State.WHITE:
-                    wstr += chr(wcount+48)
-                    wcount = 0
-                bcount += 1
-                wcount += 1
-        turn = "@"
+                    str += chr(i+48)+chr(j+48)+chr(i+j-5+48)+'W'
+        turn = "W"
         if self.turn == State.BLACK:
-            turn = "#"
-        code = bstr+turn+wstr
+            turn = "B"
+        code = turn+str
         return code
+    def string_to_board(self,str):
+        i=3
+        while i < len(str):
+            if str[i+3]=='W':
+                self.cells[int(str[i]),int(str[i+1])]=State.WHITE
+            else:
+                self.cells[int(str[i]),int(str[i+1])]=State.BLACK
+            i+=4
+
+
 

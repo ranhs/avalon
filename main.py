@@ -9,16 +9,19 @@ from board import *
 # visual_board.pr()
 # print()
 # visual_board.prv()
+#################################
 game =Game()
 print('game', game)
-#game.random_game()
-board = Board()
-board.set_to_start()
-
-print('before')
-game.scan_all_options(board,4)
-print(game.count)
-print('after')
+game.random_game()
+#################################
+# board = Board()
+# board.set_to_start()
+#
+# print('before')
+# x,y=game.scan_all_options(board,4)
+# print(game.count)
+# print(x,y)
+# print('after')
 
 #
 #
