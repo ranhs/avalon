@@ -2,8 +2,9 @@ from board import Board
 from State import *
 from Direction import  *
 import random
+import json
 
-class Game():
+class Game(Board):
     def __init__(self):
         self.board = Board()
         self.board_scores = {}
@@ -45,16 +46,30 @@ class Game():
         return count_black,count_white
 
 
-
-    def random_game(self):
+    def until_a_ball_fall(self, board_str):
+        minB= 10000
+        minW=10000
+        for i in range(200):
+            board1 = Board()
+            board1.string_to_board(board_str)
+            count,color= self.random_until_fall(board1, max(minW,minB))
+            if color != None:
+                if minW>count and color==State.WHITE:
+                    minW=count
+                if minB > count and color == State.BLACK:
+                    minB = count
+        return minB,minW
+    def random_game(self,i):
         self.board = Board()
         self.board.set_to_start()
         win = False
         black_score = 0
         white_score = 0
         boards = []
+        count =0
         while not win:
-            b = self.do_random_move()
+            b = self.do_random_move(self.board)
+            count+=1
             if b:
                 if self.board.turn == State.WHITE:
                     black_score += 1
@@ -66,18 +81,32 @@ class Game():
         print(self.board.turn, len(boards))
         print(black_score, white_score)
         boards.reverse()
+        left = len(boards)
         for board_str in boards:
             self.board_score(board_str)
-            print(board_str, self.board_scores.get(board_str))
-        print(self.board_scores)
+            left-=1
+            print(i, left, board_str, self.board_scores.get(board_str))
+        data = json.dumps(self.board_scores)
+        file = open('avalonscores.json', 'w')
+        file.write(data)
+        file.close()
+        return count
 
-    def do_random_move(self):
-        moves = self.board.all_ligel_moves()
+    def do_random_move(self,board):
+        moves = board.all_ligel_moves()
         move_index = random.randrange(0,len(moves))
         selected_move = moves[move_index]
-        b, i,j = self.board.make_a_move(selected_move[0][0],selected_move[0][1],selected_move[1])
-        self.board.change_turn()
+        b, i,j = board.make_a_move(selected_move[0][0],selected_move[0][1],selected_move[1])
+        board.change_turn()
         return b
+    def random_until_fall(self,board,moves):
+        count = 0
+        while count<moves:
+            b = self.do_random_move(board)
+            count += 1
+            if b:
+                return count, State.OTHER[board.turn]
+        return count, None
 
     def board_score(self, board_str):
         score_b=int(board_str[0])
@@ -92,10 +121,7 @@ class Game():
         if not value:
             value = {"b":10000,"w":10000,"s":0}
 
-        board=Board()
-        board.string_to_board(board_str)
-        self.count = 0
-        b,w=self.scan_all_options(board,4)
+        b, w = self.until_a_ball_fall(board_str)
         if b<value["b"]:
             value["b"]=b
         if w<value["w"]:

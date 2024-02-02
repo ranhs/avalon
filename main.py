@@ -3,6 +3,8 @@ from Game import *
 from Direction import *
 import time
 from board import *
+from datetime import datetime
+
 # board1 = visual_board = Graphics_Board()
 # print("X1")
 # visual_board.set_to_start()
@@ -12,10 +14,27 @@ from board import *
 #################################
 game =Game()
 print('game', game)
-game.random_game()
+# game.random_game()
 #################################
-# board = Board()
-# board.set_to_start()
+board = Board()
+board.set_to_start()
+# print(board.board_to_string())
+# x,y=game.until_a_ball_fall(board.board_to_string())
+# print(x,y)
+
+
+now = datetime.now()
+current_time = now.strftime("%H:%M:%S")
+print("Current Time =", current_time)
+file = open('avalonscores.json','r')
+data = file.read()
+file.close()
+game.board_scores = json.loads(data)
+for i in range(1000):
+    game.random_game(i)
+now = datetime.now()
+current_time = now.strftime("%H:%M:%S")
+print("Current Time =", current_time)
 #
 # print('before')
 # x,y=game.scan_all_options(board,4)

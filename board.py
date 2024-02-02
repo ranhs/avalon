@@ -155,9 +155,13 @@ class Board():
         code = turn+str
         return code
     def string_to_board(self,str):
+        if str[2] == "B":
+            self.turn = State.BLACK
+        else:
+            self.turn = State.WHITE
         i=3
         while i < len(str):
-            if str[i+3]=='W':
+            if str[i+3] == 'W':
                 self.cells[int(str[i]),int(str[i+1])]=State.WHITE
             else:
                 self.cells[int(str[i]),int(str[i+1])]=State.BLACK
