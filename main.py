@@ -86,7 +86,7 @@ print("Current Time =", current_time)
 #     if d == None:
 #         continue
 #     print(board1.next_in_direction(x1,y1, d))
-ve#     own, other, n, row= board1.how_much_in_a_row(x1, y1, d)
+#     own, other, n, row= board1.how_much_in_a_row(x1, y1, d)
 #     print(own, other, n, row)
 #     ok = board1.is_OK(x1,y1,d)
 #     print(ok)
