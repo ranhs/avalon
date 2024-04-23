@@ -76,13 +76,13 @@ board.pr()
 # x1, y1, x2, y2= visual_board.wait_for_user_move()
 #print(x1, y1, x2, y2)
 
-
+visual_board.open_Screen()
 
 while True:
     #board1.board_to_string()
     #board1.all_ligel_moves()
     print("turn = ", board1.turn)
-    if board1.turn == State.BLACK:
+    if board1.turn == State.BLACK or not visual_board.computer_play:
         x1, y1, x2, y2= visual_board.wait_for_user_move()
         print(x1, y1, x2, y2)
         d = board1.which_direction(x1, y1, x2, y2)
@@ -108,5 +108,8 @@ while True:
     #     print(balls, d)
     #     visual_board.move_balls(balls,d)
     if ok:
-        visual_board.make_a_turn(x1, y1, d)
+        has_winner = visual_board.make_a_turn(x1, y1, d)
+        if has_winner:
+            break
     board1.pr()
+visual_board.wait_for_user_move()

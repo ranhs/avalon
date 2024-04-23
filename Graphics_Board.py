@@ -10,7 +10,7 @@ radius = 25
 class Graphics_Board(Board):
     def __init__(self):
         self.balls = None
-        Board.__init__(self)                       
+        Board.__init__(self)
         self.x_drag_start = 0
         self.y_drag_start = 0
         self.x_drag_end = 0
@@ -23,6 +23,9 @@ class Graphics_Board(Board):
         print("L")
         self.balls = [None for i in range(11*11)]
         self.balls = np.array(self.balls).reshape((11, 11))
+        self.blackScore = Text(Point(530, 490), "0")
+        self.whiteScore = Text(Point(70, 490), "0")
+        self.computer_play = False
     def prv(self):
         #מדפיס את האוביקטים של הלוח הגרפי
         for j in range(11):
@@ -132,22 +135,28 @@ class Graphics_Board(Board):
         message.setSize(18)
         message.setStyle("bold")
         message.draw(self.window)
+        self.blackScore.setText("0")
+        self.blackScore.setSize(18)
+        self.blackScore.setStyle("bold")
+        self.blackScore.draw(self.window)
         message1 = Text(Point(70, 450), "white")
         message1.setSize(18)
         message1.setStyle("bold")
         message1.draw(self.window)
+        self.whiteScore.setText("0")
+        self.whiteScore.setSize(18)
+        self.whiteScore.setStyle("bold")
+        self.whiteScore.draw(self.window)
+
 
 
     def draw_count(self,n, color):
+        print("...inside draw_count", n, color)
         #מדפיס את המספר של הניקוד
-        if color==State.BLACK and n<5:
-            aLine = Line(Point(500+10* n, 470), Point(500+10* n, 500))
-            aLine.setWidth(3)
-            aLine.draw(self.window)
-        if color == State.WHITE and n<5:
-            aLine = Line(Point(40 + (10 * n), 470), Point(40 + (10 * n), 500))
-            aLine.setWidth(3)
-            aLine.draw( self.window)
+        if color==State.BLACK:
+            self.blackScore.setText(n)
+        if color == State.WHITE:
+            self.whiteScore.setText(n)
 
     def win(self):
         #מדפיס מסך ניצחון
@@ -157,20 +166,17 @@ class Graphics_Board(Board):
             message.setTextColor("red")
             message.setStyle("bold")
             message.setFace("helvetica")
-            aLine = Line(Point(500+10* self.count_black, 470), Point(500+10* self.count_black, 500))
-            aLine.draw(self.window)
             message.draw(self.window)
             return True
         if self.count_white == 5:
-            message = Text(Point(3, 4), "WHITE WON!")
+            message = Text(Point(300, 200), "WHITE WON!")
             message.setSize(35)
             message.setTextColor("red")
             message.setStyle("bold")
             message.setFace("helvetica")
-            aLine = Line(Point( 50, 470), Point(40 + 10 * self.count_white, 500))
-            aLine.draw(self.window)
             message.draw(self.window)
             return True
+        return False
 
 
     def make_a_turn(self, x1 ,y1 ,d):
@@ -190,18 +196,65 @@ class Graphics_Board(Board):
                 if self.cells[n1,n2] == State.BLOCK:
                     self.fall_ball(self.balls[x,y])
                     x = self.count_up(x,y)
-                    self.draw_count(x, self.cells[x,y])
-
+                    print("calling draw_count", x, self.turn)
+                    self.draw_count(x, self.turn)
                 else:
                     self.cells[n1,n2] = self.cells[x,y]
                     self.balls[n1,n2] = self.balls[x,y]
             self.cells[x1, y1] = State.EMPTY
             self.balls [x1, y1] = None
             self.change_turn()
-            self.win()
+            return self.win()
+        return False
 
-
-
+    def open_Screen(self):
+        rec = Rectangle(Point(0,0), Point(1000,1000))
+        rec.setFill("white")
+        rec.setOutline("white")
+        rec.draw(self.window)
+        text1 = Text(Point(300, 170), "Welcome to\nAvalon")
+        text1.setSize(35)
+        text1.setTextColor("blue")
+        text1.setStyle("bold")
+        text1.setFace("helvetica")
+        text1.draw(self.window)
+        rec1 = Rectangle(Point(90,300), Point(290,500))
+        rec1.setFill("white")
+        rec1.setOutline("blue")
+        rec1.draw(self.window)
+        rec2 = Rectangle(Point(310,300), Point(510,500))
+        rec2.setFill("white")
+        rec2.setOutline("blue")
+        rec2.draw(self.window)
+        text2 = Text(Point(190, 400), "Human\nvs.\nHuman")
+        text2.setSize(25)
+        text2.setTextColor("blue")
+        text2.setStyle("bold")
+        text2.setFace("helvetica")
+        text2.draw(self.window)
+        text3 = Text(Point(410, 400), "Human\nvs.\nComputer")
+        text3.setSize(25)
+        text3.setTextColor("blue")
+        text3.setStyle("bold")
+        text3.setFace("helvetica")
+        text3.draw(self.window)
+        while True:
+            self.window.wait_variable(self.drag_end)
+            print(self.x_drag_end, self.y_drag_end)
+            if self.y_drag_end<300 or self.y_drag_end>500:
+                continue
+            if self.x_drag_end>=90 and self.x_drag_end<=290:
+                self.computer_play = False
+                break
+            if self.x_drag_end >= 310 and self.x_drag_end <= 510:
+                self.computer_play = True
+                break
+        rec.undraw()
+        rec1.undraw()
+        rec2.undraw()
+        text1.undraw()
+        text2.undraw()
+        text3.undraw()
 def wait_for_mouse_click(self):
     #מחכה ללחיצה של משתמש ומדפיס את המיקום שבו הוא לחץ
     rv = self.window.getMouse()
