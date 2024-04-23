@@ -10,7 +10,7 @@ radius = 25
 class Graphics_Board(Board):
     def __init__(self):
         self.balls = None
-        Board.__init__(self)
+        Board.__init__(self)                       
         self.x_drag_start = 0
         self.y_drag_start = 0
         self.x_drag_end = 0
@@ -24,6 +24,7 @@ class Graphics_Board(Board):
         self.balls = [None for i in range(11*11)]
         self.balls = np.array(self.balls).reshape((11, 11))
     def prv(self):
+        #מדפיס את האוביקטים של הלוח הגרפי
         for j in range(11):
             for i in range(11):
                 print(self.balls[i,j], end=' ')
@@ -31,22 +32,27 @@ class Graphics_Board(Board):
 
 
     def mousedown(self,event):
+        #מחזיר את המקום שבו נלחץ העכבר
         self.x_drag_start,self.y_drag_start = event.x, event.y
 
     def mouseup(self,event):
+        #מחזיר את המקום שעוזבים בו את העכבר
         self.x_drag_end,self.y_drag_end = event.x, event.y
         self.drag_end.set(1)
 
     def view_to_model(self, x, y):
+        #מקבל מיקומים על המסך ומחזיר לאינדקסים של כדור במודל
         j = (y / radius - 1.7) / line
         i = (x / radius + 4.5 - j * 1.1) / 2.2
         return i, j
     def wait_for_user_move(self):
+        #מחזיר את האינקסים של כדור במודל בעקבות לחיצה וגרירה של המשתמש
         self.window.wait_variable(self.drag_end)
         i1, j1 = self.view_to_model(self.x_drag_start, self.y_drag_start)
         i2, j2 = self.view_to_model( self.x_drag_end, self.y_drag_end)
         return int(round(i1,0)),int(round(j1,0)), int(round(i2,0)),int(round(j2,0))
     def draw_board(self):
+        #מייצר מסך ריק ולוח משושה של המודל
         self.window.setBackground("white")
         p1=Point (int(6.85*radius), int(2.3*radius))
         p2=Point( int(17.15*radius), int(2.3*radius))
@@ -66,6 +72,7 @@ class Graphics_Board(Board):
                 self.draw_ball(j + 1, 9 - i, "gray", radius*0.7)
 
     def draw_ball(self, i, j, color, r = radius):
+        #מייצר ומחזיר אוביקט של כדור אחד
         if self.balls is None or self.balls[i,j] is None:
             c = Circle(Point(radius *(2.2 * i +1.1 *j-4.5), radius * (1.7+line*j)), r)
             c.setFill(color)
@@ -74,11 +81,13 @@ class Graphics_Board(Board):
             c.draw(self.window)
             return c
     def move_balls_internal(self, balls, delta_x, delta_y):
+        #מזיז את הכדורים לפי המשתמש בצורה גרפית
         for i in range(22):
             for ball in balls:
                 ball.move(delta_x, delta_y)
             time.sleep(0.05)
     def fall_ball(self, ball):
+        #עושד אנימציה של הפלת כדור
         ball.undraw()
         center = ball.getCenter()
         fill = ball.config['fill']
@@ -93,6 +102,7 @@ class Graphics_Board(Board):
 
 
     def move_balls(self, balls, dir):
+        #מזיז כדור במערך של אוביקט הכדורים
         if dir==Direction.RIGHT:
             self.move_balls_internal(balls, radius*0.1, 0)
         elif dir==Direction.LEFT:
@@ -106,6 +116,7 @@ class Graphics_Board(Board):
         elif dir == Direction.DOWN_LEFT:
             self.move_balls_internal(balls, -radius*0.05, radius * line/22)
     def set_to_start(self):
+        #מאתחל את הלוח הגרפי ומייצר את הכדורים
         super().set_to_start()
         for i in range(11):
             for j in range(11):
@@ -116,6 +127,7 @@ class Graphics_Board(Board):
         self.graphic_count()
 
     def graphic_count(self):
+        # מדפיס את הכותרות של ספירת הנקודות
         message = Text(Point(530, 450), "black")
         message.setSize(18)
         message.setStyle("bold")
@@ -127,6 +139,7 @@ class Graphics_Board(Board):
 
 
     def draw_count(self,n, color):
+        #מדפיס את המספר של הניקוד
         if color==State.BLACK and n<5:
             aLine = Line(Point(500+10* n, 470), Point(500+10* n, 500))
             aLine.setWidth(3)
@@ -137,6 +150,7 @@ class Graphics_Board(Board):
             aLine.draw( self.window)
 
     def win(self):
+        #מדפיס מסך ניצחון
         if self.count_black == 5:
             message = Text(Point(300, 200), "BLACK WON!")
             message.setSize(35)
@@ -160,6 +174,7 @@ class Graphics_Board(Board):
 
 
     def make_a_turn(self, x1 ,y1 ,d):
+        #עושה את כל הפעולה של התור כולל עדוכנים ובדיקה של תור
         own, other, next, row = self.how_much_in_a_row(x1, y1, d)
         if self.is_OK(x1, y1, d):
             balls = []
@@ -188,5 +203,6 @@ class Graphics_Board(Board):
 
 
 def wait_for_mouse_click(self):
+    #מחכה ללחיצה של משתמש ומדפיס את המיקום שבו הוא לחץ
     rv = self.window.getMouse()
     print(rv)

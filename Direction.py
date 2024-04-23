@@ -1,5 +1,6 @@
 
 class Direction():
+    # ערכים שמציינים כיוון תזוזה של כדור
     LEFT =1
     RIGHT=2
     UP_LEFT=3

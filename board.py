@@ -4,11 +4,11 @@ import numpy as np
 from Direction import *
 class Board():
     def __init__(self):
-        self.turn = State.BLACK
-        self.cells = [int for i in range(11*11)]
+        self.turn = State.BLACK # התור של השחקן
+        self.cells = [int for i in range(11*11)] #לוח לוגי
         self.cells = np.array(self.cells).reshape((11, 11))
-        self.count_white=0
-        self.count_black=0
+        self.count_white=0 # כמה כדורים הפיל הלבן
+        self.count_black=0 # כמה כדורים הפיל השחור
         for i in range(11):
             for j in range(11):
                 if i == 0 or i == 10 or j == 0 or j == 10 or i+j < 6 or i+j > 14:
@@ -17,13 +17,15 @@ class Board():
                     self.cells[i , j] = State.EMPTY
 
     def pr(self):
+        # פעולה שמדפיסה את הלוח
         for j in range(11):
             for i in range(11):
-                print(self.cells[i,j].value, end=' ')
+                print(self.cells[i,j], end=' ')
             print()
 
 
     def set_to_start(self):
+        # פעולה שמאתחלת למצב לוח התחלתי
         for i in range(11):
             for j in range(11):
                 if j == 1 or j == 2 or j == 3 and i >= 5 and i <= 7:
@@ -34,12 +36,14 @@ class Board():
                         self.cells[i][j] = State.BLACK
 
     def is_a_ball(self, x, y):
+        # פעולה שבודקת האם יש כדור
         if self.cells[x,y] == State.WHITE or self.cells[x,y] == State.BLACK:
             return True
         else:
             return False
 
     def legal_index(self,x1, y1, x2, y2):
+        # פעולה שבודקת האם האינדקסים שניתנו חוקיים לתזוזה
         if abs(x1-x2)>1 or abs(y1-y2)>1:
             return False
         if x1 == x2 and y1 == y2:
@@ -48,6 +52,7 @@ class Board():
             return False
         return True
     def which_direction(self, col1, row1, col2, row2):
+        #פעולה שממירה את האידקקסים שניתנו לכיוון שהמשתמש התכוון
         if self.legal_index(col1, row1, col2, row2) == False:
             return None
         if row1 == row2:
@@ -67,11 +72,14 @@ class Board():
             return Direction.DOWN_LEFT
         return None
     def next_in_direction(self,col , row, d):
+        #מחזירה את המיקום הבא בכיוון שהמשתמש הכניס
         return col + Direction.NEXT_IN_DIRECTION[d][0] , row + Direction.NEXT_IN_DIRECTION[d][1]
     def change_turn(self):
+        #מחליף תתור
         self.turn=State.OTHER[self.turn]
 
     def how_much_in_a_row(self,x,y,d):
+        #מחזיר כמה כדורים יש בשורה לפי כמה דוחפים וכמה נדחפים
         x0 = x
         y0 = y
         count_own=0
@@ -90,6 +98,7 @@ class Board():
         return count_own,count_other, next, row
 
     def count_up(self, x, y):
+        #מעלה ניקוד לצבע הרלוונטי במקרה של נפילת כדור
         if self.cells[x, y] == State.BLACK:
             self.count_white += 1
             return self.count_white
@@ -97,6 +106,7 @@ class Board():
             self.count_black += 1
             return self.count_black
     def is_OK(self,x, y, d):
+        #בודק האם כל הפעולה של התזוזה חוקית
 
         if self.turn != self.cells[x,y]:
             return False
@@ -106,6 +116,7 @@ class Board():
                 return True
         return False
     def make_a_move(self, i, j, d):
+        #  מזיז את הכדורים ברשימה הלא גרפית ומחזירה האם נפל כדור
         temp1 = State.EMPTY
         while State.EXIST[self.cells[i,j]]:
             temp2 = self.cells[i,j]
@@ -118,6 +129,7 @@ class Board():
         return b, i, j
 
     def all_ligel_moves(self):
+        # מחזיר לי רשימה של כל המהלכים החוקיים בלוח
         moves = []
         for j in range(11):
             for i in range(11):
@@ -140,6 +152,7 @@ class Board():
 
 
     def board_to_string(self):
+        # הופך לוח ממערך לסטרינג
         str = ""
         for j in range(11):
             for i in range(11):
@@ -155,6 +168,7 @@ class Board():
         code = turn+str
         return code
     def string_to_board(self,str):
+        #הופך לוח בצורת סטרינג ללוח מערכי
         if str[2] == "B":
             self.turn = State.BLACK
         else:

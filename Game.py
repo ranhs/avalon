@@ -6,11 +6,13 @@ import json
 
 class Game(Board):
     def __init__(self):
+        Board.__init__(self)
         self.board = Board()
         self.board_scores = {}
         self.count = 0
 
     def scan_all_options(self, board, deep):
+        # not used method
         count_black=10000
         count_white=10000
         self.count += 1
@@ -47,6 +49,10 @@ class Game(Board):
 
 
     def until_a_ball_fall(self, board_str):
+        # הרצת 200 משחקים אקראיים ממצב לוח נתון עד נפילת הכדור הבאה
+        # תוך כדי הריצות סופרים כמה מהלכים משוחקים עד נפילת הכדור הלבן או השחור
+        # הפונקציה מחזירה את המספר המהליכים המינימלי עד נפילת כדור שחור ועד נפילת כדור לבן
+        # המטרה לקבל אומדן טוב למינימום האמיתי לאחר הרצת מספר גדול של משחקים
         minB= 10000
         minW=10000
         for i in range(200):
@@ -60,6 +66,8 @@ class Game(Board):
                     minB = count
         return minB,minW
     def random_game(self,i):
+        # משחק משחק אקראי עד סופו
+        # עבור כל הלוחות שהיו במהלך המשחק, הוא נותן להם ניקוד דרך הפונקציה board_score
         self.board = Board()
         self.board.set_to_start()
         win = False
@@ -93,6 +101,7 @@ class Game(Board):
         return count
 
     def do_random_move(self,board):
+        # משחק מהלך אקראי אחד
         moves = board.all_ligel_moves()
         move_index = random.randrange(0,len(moves))
         selected_move = moves[move_index]
@@ -100,6 +109,9 @@ class Game(Board):
         board.change_turn()
         return b
     def random_until_fall(self,board,moves):
+        # משחק מהלכים אקראיים החל מהלוח הנתון עד שכדור אחד נופל
+        # מחזיר איזה כדור נפל וכמה מהלכים הוא שיחק
+        # מספר המהלכים מגבל לפרמטר moves
         count = 0
         while count<moves:
             b = self.do_random_move(board)
@@ -109,6 +121,8 @@ class Game(Board):
         return count, None
 
     def board_score(self, board_str):
+        # בהנתן לוח, הפונקציה מחשבת את הניקוד שלו לפי ניקוד המשחק הנוכחי
+        # ולפי מספר הצעדים המנימנים לנפילת כדור שחור/לבן שמחזירה פונקציה until_a_ball_fall
         score_b=int(board_str[0])
         score_w=int(board_str[1])
         if score_b==5:
